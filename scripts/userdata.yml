@@ -8,12 +8,16 @@ tasks:
     content: |-
       Write-Output "Start to install miscellaneous things."
 
-      Invoke-Expression "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
+      if (-not [Boolean](Get-Command scoop -ErrorAction SilentlyContinue)) {
+        Invoke-Expression "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
+      }
       scoop install git
       scoop update
       scoop bucket add extras
 
       scoop install ffmpeg
+      # AMIから起動した場合シンボリックリンク周りで何かおかしくなることがあるのか、pythonコマンドが効かなかったりするので再インストール。
+      scoop uninstall python
       scoop install python@3.11.4
 
       pip install paramiko
@@ -25,13 +29,23 @@ tasks:
 
 
 
-      $InstType = (Invoke-WebRequest -Uri "http://169.254.169.254/latest/meta-data/instance-type").Content
-      if ($InstType -eq "g4dn.xlarge") {
+      $token = Invoke-RestMethod 'http://169.254.169.254/latest/api/token' -Method Put -Headers @{ "X-aws-ec2-metadata-token-ttl-seconds" = 21600 }
+
+
+
+      $instType = Invoke-RestMethod 'http://169.254.169.254/latest/meta-data/instance-type' -Headers @{ "X-aws-ec2-metadata-token" = $token }
+      if ($instType.StartsWith("g")) {
         # pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
 
         # 結果の安定化のためにGPUクロックを固定する。
         # https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/optimize_gpu.html
-        $err = (Start-Process -FilePath nvidia-smi -ArgumentList "-ac","5001,1590" -Wait -NoNewWindow -PassThru).ExitCode
+        $clocks = ""
+        if ($instType.Contains("g4dn")) {
+          $clocks = "5001,1590"
+        } elseif ($instType.Contains("g5")) {
+          $clocks = "6250,1710"
+        }
+        $err = (Start-Process -FilePath nvidia-smi -ArgumentList "-ac",$clocks -Wait -NoNewWindow -PassThru).ExitCode
         if ($err -ne 0) {
           Write-Error "Failed to fix GPU clock."
         }
@@ -69,10 +83,10 @@ tasks:
 
       # インスタンスメタデータから公開鍵を取得し administrators_authorized_keys に設定。
       $administratorsKeyPath = Join-Path $env:ProgramData 'ssh\administrators_authorized_keys'
-      Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key/ |
+      Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key/ -Headers @{ "X-aws-ec2-metadata-token" = $token } |
           Out-File -FilePath $administratorsKeyPath -Encoding ascii
 
-      # ファイルのアクセスアクセス権の継承を解除。
+      # ファイルのアクセス権の継承を解除。
       $acl = Get-Acl $administratorsKeyPath
       $acl.SetAccessRuleProtection($true, $true)
       $acl | Set-Acl -Path $administratorsKeyPath
@@ -92,5 +106,5 @@ tasks:
 
 
       # 異なるインスタンス上のアプリケーション間で直接通信する際のポートを許可しておく。
-      New-NetFirewallRule -DisplayName 'RTCamp9 App to App' -Profile 'Any' -Direction 'Inbound' -Action 'Allow' -Protocol 'TCP' -LocalPort 12345
+      New-NetFirewallRule -DisplayName 'RTCamp10 App to App' -Profile 'Any' -Direction 'Inbound' -Action 'Allow' -Protocol 'TCP' -LocalPort 12345
 - task: enableOpenSsh
