@@ -1,16 +1,15 @@
 # ルール・実行環境・提出物仕様
 
 ## はじめに
-このファイルではレイトレ合宿10のルールや提出物の仕様を説明しています。\
+このファイルではレイトレ合宿11のルールや提出物の仕様を説明しています。\
 **各自熟読をお願いします。**
 
-ざっくりレイトレ合宿9からの変更点：
+ざっくりレイトレ合宿10からの変更点：
 
-- 静止画を提出可能としました。部門は分かれていません！
-- 今年はCPU・GPUインスタンスともにシングルインスタンス構成となりました。
-- 制限時間は256秒です。
-- プレゼン資料には使用した主要なライブラリや3Dデータの出処を明記すること。
-
+- 制限時間は180秒です。
+- 明示的な静止画の提出を廃止しました。
+- 版権物のレンダリングを禁止します。
+- 提出期間各日の締め切りを22:00とします。
 
 ## 各仕様・ルール
 
@@ -19,17 +18,19 @@
 
 ```
 <root directory> ... 名前は参加者名とインスタンスタイプから name_(cpu|gpu) とする
-├─ run.ps1 ............ 実行開始スクリプト
-├─ fps.txt ............ [動画提出の場合のみ] 動画ファイルのfpsの数字だけを書き込む
+├─ run.(ps1|sh) ....... 実行開始スクリプト
+├─ fps.txt ............ 動画ファイルのfpsの数字だけを書き込む
 ├─ requirements.txt ... [Optional] Pythonのrequirements.txt
-├─ ***.exe ............ 実行ファイル
+├─ ***(.exe) .......... 実行ファイル
 ├─ ***.pdf or pptx .... レンダラー紹介スライド
-└─ etc ................ アセット
+└─ etc ................ アセットなど
 ```
 
 - zipファイルの上限サイズは1GiB(=1024MiB)です。
-- 動画を提出する場合は `fps.txt` にフレームレートの数字だけを書き込んでください。フレームレートは最低10、最高60とします。
+- `fps.txt` にフレームレートの数字だけを書き込んでください。フレームレートは最低10、最高60とします。
 - 動画の時間は最低3秒、最高10秒とします。fpsの仕様とあわせると、最低で30枚、最高で600枚の画像出力を行うことになります。
+- 静止画の提出は認められません。ただし静止画にKen Burnsエフェクトなどを適用して動画化したものは提出が可能です。
+- 版権物のレンダリングを行わないでください。
 - Pythonに依存していて何らかのライブラリが必要な場合は [requirements.txt](https://note.nkmk.me/python-pip-install-requirements/) を同梱してください。
 - レンダラー紹介のプレゼンは一人5分です。
   - レンダラー名を入れてください。
@@ -38,15 +39,16 @@
 ### 実行環境
 
 EC2インスタンスは以下のいずれか：
-| インスタンスタイプ | 料金<br/>USD/h/inst | CPU | System Mem | GPU | GPU Mem | ストレージ | インスタンスストア |
-| - | - | - | - | - | - | - | - |
-| [g5.xlarge](https://aws.amazon.com/jp/ec2/instance-types/g5/) | 1.643 | AMD EPYC 7R32<br>4 vCPU | 16 GiB | [NVIDIA A10G](https://www.nvidia.com/ja-jp/data-center/products/a10-gpu/) | 24 GiB | EBS | 250 GiB NVMe SSD |
-| [c7i.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c7i/) | 19.6176 | Intel Xeon Scalable<br/>[Sapphire Rapids](https://www.intel.co.jp/content/www/jp/ja/products/docs/processors/xeon-accelerated/4th-gen-xeon-scalable-processors.html)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
+| インスタンスタイプ | 料金<br/>USD/h/inst | OS | CPU | System Mem | GPU | GPU Mem | ストレージ | インスタンスストア |
+| - | - | - | - | - | - | - | - | - |
+| [g5.xlarge](https://aws.amazon.com/jp/ec2/instance-types/g5/) | 1.643 | Windows | AMD EPYC 7R32<br>4 vCPU | 16 GiB | [NVIDIA A10G](https://www.nvidia.com/ja-jp/data-center/products/a10-gpu/) | 24 GiB | EBS | 250 GiB NVMe SSD |
+| [c7i.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c7i/) | 19.6176 | Windows | Intel Xeon Scalable<br/>[Sapphire Rapids](https://www.intel.co.jp/content/www/jp/ja/products/docs/processors/xeon-accelerated/4th-gen-xeon-scalable-processors.html)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
+| [c8i.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c8g/) | 9.60576 | Linux | AWS Graviton 4 (ARM)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
 
-- OSはWindows Server 2022 Baseを使います。
+- Windows OSはWindows Server 2022 Baseを使います。
 - python 3.11.4がインストールされています。\
   pythonライブラリとしては数値計算用にnumpy, scipy、画像処理にPillow、SSH操作用にparamikoをインストールしています。
-- GPUインスタンスはDirectX 12, Vulkan, OptiX 8.0が動作するドライバー、CUDA 12.5.1がインストールされています。
+- GPUインスタンスはDirectX 12, Vulkan, OptiX 9.0が動作するドライバー、CUDA 13.0.1がインストールされています。
 - GPUインスタンスはインスタンスストア付きではありますが、特に要望がない限り設定しません。
 - EC2の基本的な使い方については[こちら](AWS101.md)を参照。
 
@@ -55,18 +57,17 @@ EC2インスタンスは以下のいずれか：
 提出物内の `<root directory>` をホームディレクトリに配置します。すなわち `run.ps1` は次の絶対パスに配置されることになります。\
 `C:\Users\Administrator\<root directory>\run.ps1`
 
-- 画像出力は.pngまたは.jpgで000.png, 001.png, ...と0開始、3桁の連番で `<root directory>` に出力してください。\
-  静止画の場合は000.png/jpgを最終結果として採用します。
+- 画像出力は.pngまたは.jpgで000.png, 001.png, ...と0開始、3桁の連番で `<root directory>` に出力してください。
 - ウィンドウやダイアログを出さないでください。
 - キーボードやマウスの操作を要求せずに自動でレンダリングしてください。
-- 制限時間内(**256秒**)に自動で終了するようにしてください。
+- 制限時間内(**180秒**)に自動で終了するようにしてください。
 - エラーは標準出力か標準エラー出力かログファイルに出力してください。
 - インターネット接続をしないで下さい。
 
 ### 提出とフィードバック
 後日アップローダーのURLと提出期間(例年5日間程度)を参加者に伝えます。最終提出期限はレイトレ合宿当日ではなく例年何日か前に設定しています。
 
-提出期間中、毎晩24:00時点における参加者それぞれの最新提出ファイルを運営がEC2上で実行、結果・不備等を参加者にフィードバックする、という流れを例年実施しています。期間中最後に提出された作品が本戦で披露される作品になります。このあたりの詳細は改めてお伝えします。
+提出期間中、毎晩22:00時点における参加者それぞれの最新提出ファイルを運営がEC2上で実行、結果・不備等を参加者にフィードバックする、という流れを例年実施しています。期間中最後に提出された作品が本戦で披露される作品になります。このあたりの詳細は改めてお伝えします。
 
 「提出物のフォーマット間違い」や「同梱ファイルの不足」、「手元PCとの環境違いでプログラムが期待通り動作しない」等、毎年様々な問題がこの段階で発覚します。ギリギリになっての修正はなかなか辛いので可能であれば事前に自前でEC2インスタンスを建ててテスト実行しておくことを推奨します。
 
