@@ -8,7 +8,7 @@ if ($CudaInstaller -ne "") {
         exit 1
     }
     # Write-Output "Start to download CUDA Toolkit"
-    # Copy-S3Object -BucketName rtcamp10 -Key cuda_12.5.1_555.85_windows.exe -LocalFile $CudaInstaller -Region ap-northeast-1
+    # Copy-S3Object -BucketName rtcamp11 -Key cuda_13.0.1_windows.exe -LocalFile $CudaInstaller -Region ap-northeast-1
     # Write-Output "Finished to download CUDA Toolkit"
 }
 
@@ -48,7 +48,7 @@ if ($err -ne 0) {
 }
 else {
     New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\nvlddmkm\Global" -Name "vGamingMarketplace" -PropertyType "DWord" -Value "2"
-    Invoke-WebRequest -Uri "https://nvidia-gaming.s3.amazonaws.com/GridSwCert-Archive/GridSwCertWindows_2023_9_22.cert" -OutFile "$Env:PUBLIC\Documents\GridSwCert.txt"
+    Invoke-WebRequest -Uri "https://nvidia-gaming.s3.amazonaws.com/GridSwCert-Archive/GridSwCertWindows_2024_02_22.cert" -OutFile "$Env:PUBLIC\Documents\GridSwCert.txt"
     Write-Output "Finished to install NVIDIA driver"
 }
 
@@ -58,10 +58,7 @@ $NvSmiDir = "C:\Windows\System32\DriverStore\FileRepository\nvgrid*\"
 if ($CudaInstaller -ne "") {
     Write-Output "Start to install CUDA Toolkit"
     
-    # CUDA Toolkitを-s -nオプションのみでインストールすると既にインストールしたNVIDIAドライバーをCUDA Toolkit内のドライバで上書きされるらしい。
-    # そうなるとVulkanが使えなくなるようなので必要そうなライブラリのみを指定してインストールする。
-    # https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html
-    $err = (Start-Process -FilePath $CudaInstaller -ArgumentList "-s -n cudart_12.5 nvcc_12.5 nvjitlink_12.5 nvrtc_12.5 nvtx_12.5 thrust_12.5 cublas_12.5 cufft_12.5 curand_12.5 cusolver_12.5 cusparse_12.5 npp_12.5 nvjpeg_12.5" -Wait -NoNewWindow -PassThru).ExitCode
+    $err = (Start-Process -FilePath $CudaInstaller -ArgumentList "-s -n" -Wait -NoNewWindow -PassThru).ExitCode
     if ($err -ne 0) {
         Write-Error "Failed to install CUDA Toolkit"
     }

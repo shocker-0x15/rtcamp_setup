@@ -6,6 +6,7 @@
 
 ざっくりレイトレ合宿10からの変更点：
 
+- ARM CPUインスタンス c8g.metal-48xl (Linux) を追加、x86のCPUインスタンス、GPUインスタンスは変更なし。
 - 制限時間は180秒です。
 - 明示的な静止画の提出を廃止しました。
 - 版権物のレンダリングを禁止します。
@@ -43,9 +44,9 @@ EC2インスタンスは以下のいずれか：
 | - | - | - | - | - | - | - | - | - |
 | [g5.xlarge](https://aws.amazon.com/jp/ec2/instance-types/g5/) | 1.643 | Windows | AMD EPYC 7R32<br>4 vCPU | 16 GiB | [NVIDIA A10G](https://www.nvidia.com/ja-jp/data-center/products/a10-gpu/) | 24 GiB | EBS | 250 GiB NVMe SSD |
 | [c7i.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c7i/) | 19.6176 | Windows | Intel Xeon Scalable<br/>[Sapphire Rapids](https://www.intel.co.jp/content/www/jp/ja/products/docs/processors/xeon-accelerated/4th-gen-xeon-scalable-processors.html)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
-| [c8i.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c8g/) | 9.60576 | Linux | AWS Graviton 4 (ARM)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
+| [c8g.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c8g/) | 9.60576 | Linux | AWS Graviton 4 (ARM)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
 
-- Windows OSはWindows Server 2022 Baseを使います。
+- Windows OSはWindows Server 2025 Baseを使います。
 - python 3.11.4がインストールされています。\
   pythonライブラリとしては数値計算用にnumpy, scipy、画像処理にPillow、SSH操作用にparamikoをインストールしています。
 - GPUインスタンスはDirectX 12, Vulkan, OptiX 9.0が動作するドライバー、CUDA 13.0.1がインストールされています。
