@@ -18,7 +18,7 @@
 提出物の仕様は以下の構造とします。`<root directory>` をzipファイルに圧縮したものを提出してください。
 
 ```
-<root directory> ... 名前は参加者名とインスタンスタイプから name_(cpu|gpu) とする
+<root directory> ... 参加者名
 ├─ run.(ps1|sh) ....... 実行開始スクリプト
 ├─ fps.txt ............ 動画ファイルのfpsの数字だけを書き込む
 ├─ requirements.txt ... [Optional] Pythonのrequirements.txt
