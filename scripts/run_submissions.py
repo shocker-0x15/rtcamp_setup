@@ -99,14 +99,14 @@ def run():
             shutil.copy2(deck_file, dst_dir)
 
         def get_local_file_list(dir):
-            return set([file.name for file in dir.iterdir() if file.is_file()])
+            files = set()
+            for path in dir.rglob('*'):
+                if path.is_file():
+                    files.add(str(path.relative_to(dir)))
+            return files
 
         # レンダリング実行前のファイルリストを生成。
-        org_files = []
-        for file in ext_files:
-            if not file.endswith('/') and len(Path(file).parts) == 2:
-                org_files.append(Path(file).name)
-        org_files = set(org_files)
+        org_files = get_local_file_list(working_dir)
 
         # requirements.txtに従ってパッケージインストール。
         if 'requirements.txt' in org_files:
@@ -155,12 +155,16 @@ def run():
 
         # ローカルマシンで出力された画像をコピー。
         for file in new_files:
-            src_file = working_dir / file
-            if img_regex.match(file):
+            rel_path = Path(file)
+            src_file = working_dir / rel_path
+            if img_regex.match(rel_path.name):
                 if (src_file.stat().st_mtime - start_time) < time_limit:
-                    shutil.copy2(src_file, img_dir)
+                    dst_name = rel_path.name if rel_path.parent == Path('.') else rel_path.as_posix().replace('/', '_')
+                    shutil.copy2(src_file, img_dir / dst_name)
             else:
-                shutil.copy2(src_file, dst_local_others_dir)
+                dst_path = dst_local_others_dir / rel_path
+                dst_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src_file, dst_path)
 
         # 連番画像における欠落事故防止のため名前でソートしたのち改めて連番化する。
         ext = None
