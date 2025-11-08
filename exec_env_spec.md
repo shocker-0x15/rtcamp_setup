@@ -46,7 +46,8 @@ EC2インスタンスは以下のいずれか：
 | [c7i.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c7i/) | 19.6176 | Windows | Intel Xeon Scalable<br/>[Sapphire Rapids](https://www.intel.co.jp/content/www/jp/ja/products/docs/processors/xeon-accelerated/4th-gen-xeon-scalable-processors.html)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
 | [c8g.metal-48xl](https://aws.amazon.com/jp/ec2/instance-types/c8g/) | 9.60576 | Linux | AWS Graviton 4 (ARM)<br>192 vCPU | 384 GiB | N/A | N/A | EBS | N/A |
 
-- Windows OSはWindows Server 2025 Baseを使います。
+- Windows OSはGPUインスタンスでWindows Server 2025 Base、CPUインスタンスでWindows Server 2022 Baseを使います。
+- Linux OSとしてUbuntu 24.04 LTSを使います。
 - python 3.11.4がインストールされています。\
   pythonライブラリとしては数値計算用にnumpy, scipy、画像処理にPillow、SSH操作用にparamikoをインストールしています。
 - GPUインスタンスはDirectX 12, Vulkan, OptiX 9.0が動作するドライバー、CUDA 13.0.1がインストールされています。
