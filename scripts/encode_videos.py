@@ -23,28 +23,7 @@ def run_command(cmd, timeout=None):
         encoding=encoding)
 
 renderer_infos = {
-    "akari10_cpu":               ("hole", "akari10", "CPU"),
-    "c5h12_cpu":                 ("Pentan", "Petals", "CPU"),
-    "eclmist_gpu":               ("Samuel_Huang", "Ether", "GPU"),
-    "elk_cpu":                   ("elk", "alpine", "CPU"),
-    "fluorite20241009_cpu":      ("ykozw", "fluorite", "CPU"),
-    "gam0022_gpu_2024-10-09-v4": ("gam", "redflash", "GPU"),
-    "hamity_11_cpu":             ("hamity", "Archaeopteryx", "CPU"),
-    "ishiyama_cpu":              ("ishiyama", "particle simulator", "CPU"),
-    "kinankomoti_gpu":           ("kiNaNkomoti", "Skhole Renderer", "GPU"),
-    "kugi_gpu_10_9_final":       ("kugi", "Chill in the Box", "GPU"),
-    "nishiki_gpu":               ("Nishiki", "coalumine", "GPU"),
-    "pheema_cpu":                ("Pheema", "Auteve", "CPU"),
-    "pocol_rtcamp_2024_1009":    ("Pocol", "ponzu", "GPU"),
-    "shinji_cpu":                ("Shinji_Ogaki", "redqueen", "CPU"),
-    "shin_gpu":                  ("Shocker", "makeshift", "GPU"),
-    "sketchbooks99_gpu":         ("Shunji_Kiuchi", "御食事処 礼と麗", "GPU"),
-    "syokota_gpu":               ("Somatic_Cell", "DeCu", "GPU"),
-    "tata_gpu":                  ("tata", "rayst", "GPU"),
-    "udemegane_gpu":             ("udemegane", "太腿レンダリング", "GPU"),
-    "ushio_gpu":                 ("ushio", "Hierophant Red", "GPU"),
-    "YoshisDream_gpu":           ("Yoshis_Dream", "kagayaki_v3", "GPU"),
-    "yumcyawiz_gpu":             ("yumcyawiz", "vk-illuminati", "GPU"),
+    "":               ("", "", ""),
 }
 
 def run():
