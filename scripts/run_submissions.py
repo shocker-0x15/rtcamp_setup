@@ -26,7 +26,7 @@ def run():
     submission_dir = Path(sys.argv[1])
     result_dir = Path(sys.argv[2])
     dir_to_place = Path(sys.argv[3]) if sys.argv[3] != "-" else Path.home()
-    time_limit = 256 + 10
+    time_limit = 180 + 10
     # time_limit = 30 + 10
 
     # pwsh = 'powershell'
