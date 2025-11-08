@@ -7,6 +7,7 @@ import time
 import re
 import subprocess
 import zipfile
+import platform
 
 def chdir(dst):
     oldDir = os.getcwd()
@@ -31,6 +32,7 @@ def run():
     # pwsh = 'powershell'
     # Powershell 7以降を導入した場合
     pwsh = 'pwsh'
+    is_windows = (os.name == 'nt') or (platform.system().lower() == 'windows')
 
     if not submission_dir.exists():
         print('Submission directory does not exist.')
@@ -115,21 +117,29 @@ def run():
         start_time = time.time()
 
         # レンダリング実行。
-        cmd = [pwsh, '-ExecutionPolicy', 'Bypass', '-File', './run.ps1']
-        # cmd = ['./run.sh']
-        stderr = None
-        try:
-            output = run_command(cmd, timeout=time_limit)
-            stdout = output.stdout
-            stderr = output.stderr
-        except subprocess.CalledProcessError as e:
-            stdout = e.stdout
-            stderr = e.stderr
-        except Exception as e:
-            if e.stdout:
+        run_script = working_dir / ('run.ps1' if is_windows else 'run.sh')
+        stdout = ''
+        stderr = ''
+        if run_script.exists():
+            if is_windows:
+                cmd = [pwsh, '-ExecutionPolicy', 'Bypass', '-File', str(run_script)]
+            else:
+                cmd = ['bash', str(run_script)]
+            stderr = None
+            try:
+                output = run_command(cmd, timeout=time_limit)
+                stdout = output.stdout
+                stderr = output.stderr
+            except subprocess.CalledProcessError as e:
                 stdout = e.stdout
-            if e.stderr:
                 stderr = e.stderr
+            except Exception as e:
+                if getattr(e, 'stdout', None):
+                    stdout = e.stdout
+                if getattr(e, 'stderr', None):
+                    stderr = e.stderr
+        else:
+            misc_msg += f'{run_script.name}: not found\n'
 
         # 標準出力とエラー出力を書き出す。
         if stdout:
