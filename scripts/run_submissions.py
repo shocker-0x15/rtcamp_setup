@@ -157,10 +157,9 @@ def run():
         for file in new_files:
             rel_path = Path(file)
             src_file = working_dir / rel_path
-            if img_regex.match(rel_path.name):
-                if (src_file.stat().st_mtime - start_time) < time_limit:
-                    dst_name = rel_path.name if rel_path.parent == Path('.') else rel_path.as_posix().replace('/', '_')
-                    shutil.copy2(src_file, img_dir / dst_name)
+            if img_regex.match(rel_path.name) and (src_file.stat().st_mtime - start_time) < time_limit:
+                dst_name = rel_path.name if rel_path.parent == Path('.') else rel_path.as_posix().replace('/', '_')
+                shutil.copy2(src_file, img_dir / dst_name)
             else:
                 dst_path = dst_local_others_dir / rel_path
                 dst_path.parent.mkdir(parents=True, exist_ok=True)
