@@ -22,10 +22,6 @@ def run_command(cmd, timeout=None):
         cmd, check=True, timeout=timeout, capture_output=True, text=True,
         encoding=encoding)
 
-renderer_infos = {
-    "":               ("", "", ""),
-}
-
 def run():
     submission_dir = Path(sys.argv[1])
     images_root_dir = Path(sys.argv[2])
@@ -74,10 +70,13 @@ def run():
     # 指定されたフレームレートで動画をエンコード。
     for submission_name, fps in fps_list.items():
         images_dir = images_root_dir / ('_images_' + submission_name)
-        renderer_info = renderer_infos[submission_name]
-        file_name = renderer_info[1].replace(' ', '_') + \
-            '__' + renderer_info[0].replace(' ', '_') + \
-            '__' + renderer_info[2]
+        if not images_dir.exists():
+            print(f'Images directory does not exist: {images_dir}')
+            continue
+
+        sanitized = re.match(
+            r'^(.*?)_(?:win|linux)_(?:gpu|cpu).*', submission_name)
+        file_name = sanitized.group(1)
 
         for file in images_dir.iterdir():
             if file.is_file():
